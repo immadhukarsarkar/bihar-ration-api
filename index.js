@@ -5,10 +5,17 @@ const cheerio = require('cheerio');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// India proxy
+const proxyURL = "https://proxy.scrapeops.io/v1/";
+const apiKey = "free"; // temporary free proxy key
+
 app.get("/check/:rc", async (req, res) => {
     const rc = req.params.rc;
 
-    const url = `https://epos.bihar.gov.in/FPS_Transaction_Details.jsp?rc_no=${rc}`;
+    // REAL Bihar PDS URL
+    const target = `https://epos.bihar.gov.in/FPS_Transaction_Details.jsp?rc_no=${rc}`;
+
+    const url = `${proxyURL}?api_key=${apiKey}&url=${encodeURIComponent(target)}`;
 
     try {
         const response = await axios.get(url);
@@ -40,8 +47,9 @@ app.get("/check/:rc", async (req, res) => {
         });
 
     } catch (err) {
-        res.json({ error: "Unable to fetch data" });
+        res.json({ error: "Unable to fetch data", details: err.message });
     }
 });
 
-app.listen(PORT, () => console.log(`API Running`));
+app.listen(PORT, () => console.log(`API Running with India Proxy`));
+
